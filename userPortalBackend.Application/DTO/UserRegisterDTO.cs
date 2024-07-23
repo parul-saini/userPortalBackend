@@ -18,6 +18,8 @@ namespace userPortalBackend.Application.DTO
         public string Phone { get; set; }
         public string AlternatePhone { get; set; }
         public string Password { get; set; }
+        public string Role { get;set; }
+        public string ImageUrl {  get; set; }
 
         // Address fields
         public string AddressLine1 { get; set; }

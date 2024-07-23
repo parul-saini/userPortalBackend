@@ -1,5 +1,9 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 using userPortalBackend.Application.IRepository;
 using userPortalBackend.Application.IServices;
 using userPortalBackend.Infrastructure.Implementation.Repository;
@@ -28,6 +32,28 @@ namespace userPortalBackend.presentation
             builder.Services.AddTransient<IUserServices,UserServices >();
             builder.Services.AddScoped<PasswordHasher>();
 
+
+            // --------------- this code is to generate the token 
+
+            var key = Encoding.ASCII.GetBytes("My_name_is_parul_28_secret_key__"); //  secret key
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                };
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -38,6 +64,8 @@ namespace userPortalBackend.presentation
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

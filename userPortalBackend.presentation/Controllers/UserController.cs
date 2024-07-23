@@ -55,7 +55,18 @@ namespace userPortalBackend.presentation.Controllers
                
                     return BadRequest("Inavlid credential");
                 }
-                return Ok("user login successfully");
+
+                var jwtCredential = new JwtCredentialDto{
+                     userId= user.UserId,
+                     Email= user.Email,
+                     Password= loginDTO.Password
+                };
+
+                var jwtToken = JwtTokenGenerator.GenerateToken(jwtCredential);
+                return Ok(new {
+                    token= jwtToken,
+                    Message= "user login successfully"
+                });
             }
             catch (Exception ex) {
                 return BadRequest(ex.Message);

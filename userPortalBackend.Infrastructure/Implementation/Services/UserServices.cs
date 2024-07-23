@@ -43,7 +43,9 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
                 Email = userRegister.Email,
                 Phone = userRegister.Phone,
                 AlternatePhone = userRegister.AlternatePhone,
-                Password = userRegister.Password, // Note: hash the password
+                Password = userRegister.Password, //  hashed  password
+                Role = userRegister.Role,
+                ImageUrl = userRegister.ImageUrl,
                 AddressPortals = new List<AddressPortal>
                 {
                     new AddressPortal
