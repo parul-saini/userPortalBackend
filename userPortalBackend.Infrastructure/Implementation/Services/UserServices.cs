@@ -27,6 +27,8 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
             if(await _userRepository.userExist(userRegister.Email)){
                 throw new Exception("User is already exist");
             }
+            var encryptedEmail = EncryptionDecryptionHandler.Encryption(userRegister.Email);
+            userRegister.Email = encryptedEmail;
 
             var user = new UserPortal
             {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using userPortalBackend.Application.DTO;
 using userPortalBackend.Application.IRepository;
 using userPortalBackend.presentation.Data.Models;
+using userPortalBackend.presentation.TempModels;
 
 namespace userPortalBackend.Infrastructure.Implementation.Repository
 {
@@ -40,7 +41,12 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
         {
             return  await _dataContext.UserPortals.Where(u => u.Email == email).FirstOrDefaultAsync();
         }
-        
-    
+
+        public async Task<ResetPassword> setEmailToken(ResetPassword emailCredential)
+        {
+             await _dataContext.ResetPasswords.AddAsync(emailCredential);
+            await _dataContext.SaveChangesAsync();
+            return emailCredential;
+        }
     }
 }

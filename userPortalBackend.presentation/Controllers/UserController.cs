@@ -4,6 +4,8 @@ using userPortalBackend.Application.DTO;
 using userPortalBackend.Application.IServices;
 using userPortalBackend.presentation.Data.Models;
 using userPortalBackend.presentation;
+using System.Security.Cryptography;
+using userPortalBackend.presentation.TempModels;
 
 namespace userPortalBackend.presentation.Controllers
 {
@@ -12,8 +14,12 @@ namespace userPortalBackend.presentation.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserServices _userServices;
-        public UserController(IUserServices userServices) { 
+        private readonly IConfiguration _configuration;
+        private readonly IEmailServices _emailServices;
+        public UserController(IUserServices userServices, IConfiguration configuration,IEmailServices emailServices) { 
          _userServices = userServices;
+         _configuration = configuration;
+           _emailServices = emailServices;
         }
 
         [HttpGet]
@@ -30,8 +36,13 @@ namespace userPortalBackend.presentation.Controllers
                var PasswordHasher= new PasswordHasher();
                var HashedPassword = PasswordHasher.HashedPassword(userRegister.Password);
                userRegister.Password = HashedPassword;
+               //var encryptEmail= EncryptionHelper.Encryption(userRegister.Email);
+               //userRegister.Email= encryptEmail;
                 var user = await _userServices.addUser(userRegister);
-                return Ok("user added successfully");
+                return Ok(new{
+                    StatusCode = 200,
+                    Message= "user added successfully",
+                });
             }
             catch (Exception ex) { 
                 return BadRequest(ex.Message);
@@ -45,8 +56,21 @@ namespace userPortalBackend.presentation.Controllers
             try
             {
                 var user = await _userServices.getUserByEmail(loginDTO.Email);
+
                 if (user == null)
-                    return BadRequest("user not exists");
+                    return BadRequest("User does not exist");
+
+                string encryptedEmail = user.Email;
+                // Decrypt the stored email from the database
+                var decryptedStoredEmail = EncryptionHelper.Decryption(encryptedEmail);
+
+                // Compare the decrypted email with the one provided by the user
+                if (decryptedStoredEmail != loginDTO.Email)
+                {
+                    return BadRequest("Invalid credentials");
+                }
+
+
                 // verify the password
                 var PasswordHasher = new PasswordHasher();
                 var orgPassword = PasswordHasher.VerificationPassword(loginDTO.Password,user.Password);
@@ -71,6 +95,53 @@ namespace userPortalBackend.presentation.Controllers
             catch (Exception ex) {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPost]
+        [Route("/reset-password-email/{email}")]
+        public async Task<IActionResult> sendEmail(string email)
+        {
+            try
+            {
+                var user = await _userServices.getUserByEmail(email);
+                if (user == null) return NotFound(
+                    new
+                    {
+                        statusCode = 404,
+                        Message = "User Not Found"
+                    }
+                );
+
+                var tokenBytes = RandomNumberGenerator.GetBytes(64);
+                var emailToken = Convert.ToBase64String(tokenBytes);
+                var resetPassword = new ResetPassword
+                {
+                    UserId = user.UserId,
+                    ResetPasswordToken = emailToken,
+                    ResetPasswordExpiry = DateTime.Now.AddMinutes(20)
+                };
+
+                var from = _configuration["Emailsettings:From"];
+                var _emailModel = new EmailDTO
+                (
+                    email,
+                    "Reset Password",
+                    EmailBody.EmailStringbody(email, emailToken)
+                );
+
+                _emailServices.sendEmail( _emailModel );
+                _emailServices.setEmailToken(resetPassword);
+                return Ok(new
+                {
+                    statusCode = 200,
+                    Message = "Sent Email Successfully!"
+                });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using userPortalBackend.presentation.TempModels;
 
 namespace userPortalBackend.presentation.Data.Models;
 
@@ -19,6 +20,7 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<UserPortal> UserPortals { get; set; }
 
+    public virtual DbSet<ResetPassword> ResetPasswords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,6 +83,17 @@ public partial class DataContext : DbContext
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.InverseCreatedByNavigation)
                 .HasForeignKey(d => d.CreatedBy)
                 .HasConstraintName("FK__userPorta__Creat__19AB9A98");
+        });
+
+        modelBuilder.Entity<ResetPassword>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ResetPas__3214EC075BE756F8");
+
+            entity.ToTable("ResetPassword");
+
+            entity.Property(e => e.ResetPasswordExpiry).HasColumnType("datetime");
+            entity.Property(e => e.ResetPasswordToken).HasMaxLength(256);
+            entity.Property(e => e.UserId).HasColumnName("userID");
         });
 
         OnModelCreatingPartial(modelBuilder);

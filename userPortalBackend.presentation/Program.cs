@@ -30,6 +30,7 @@ namespace userPortalBackend.presentation
 
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IUserServices,UserServices >();
+            builder.Services.AddTransient<IEmailServices,EmailServices >();
             builder.Services.AddScoped<PasswordHasher>();
 
 
@@ -54,6 +55,7 @@ namespace userPortalBackend.presentation
                     ValidateAudience = false,
                 };
             });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

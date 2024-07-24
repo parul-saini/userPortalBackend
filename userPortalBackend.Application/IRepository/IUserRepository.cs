@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using userPortalBackend.Application.DTO;
 using userPortalBackend.presentation.Data.Models;
+using userPortalBackend.presentation.TempModels;
 
 namespace userPortalBackend.Application.IRepository
 {
@@ -16,5 +17,7 @@ namespace userPortalBackend.Application.IRepository
 
         public Task<bool> userExist(string email);
         public Task<UserPortal> getUserByEmail(string email);
+
+        public Task<ResetPassword> setEmailToken(ResetPassword emailCredential);
     }
 }
