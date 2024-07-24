@@ -15,5 +15,7 @@ namespace userPortalBackend.Application.IServices
         public Task<UserPortal> addUser(UserRegisterDTO userRegister);
 
         public Task<UserPortal> getUserByEmail(string email);
+
+        public Task<UserPortal> loginUser(UserLoginDTO logindto);
     }
 }

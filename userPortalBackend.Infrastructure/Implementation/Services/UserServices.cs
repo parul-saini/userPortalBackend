@@ -73,6 +73,13 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
         {
             return await _userRepository.getUserByEmail(email);
         }
-        
+
+        public async Task<UserPortal> loginUser(UserLoginDTO logindto)
+        {
+            //encrypt the email at all, you need to do it with a common salt/key. Otherwise, how are you going to select a user by his email address from the db to check whether the hashed password is correct?
+            var decryptedEmail = EncryptionDecryptionHandler.Encryption(logindto.Email);
+            return await _userRepository.getUserByEmail(decryptedEmail);
+        }
+
     }
 }

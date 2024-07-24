@@ -55,21 +55,11 @@ namespace userPortalBackend.presentation.Controllers
         {
             try
             {
-                var user = await _userServices.getUserByEmail(loginDTO.Email);
+
+                var user = await _userServices.loginUser(loginDTO);
 
                 if (user == null)
                     return BadRequest("User does not exist");
-
-                string encryptedEmail = user.Email;
-                // Decrypt the stored email from the database
-                var decryptedStoredEmail = EncryptionHelper.Decryption(encryptedEmail);
-
-                // Compare the decrypted email with the one provided by the user
-                if (decryptedStoredEmail != loginDTO.Email)
-                {
-                    return BadRequest("Invalid credentials");
-                }
-
 
                 // verify the password
                 var PasswordHasher = new PasswordHasher();
