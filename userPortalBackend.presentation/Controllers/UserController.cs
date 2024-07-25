@@ -45,7 +45,11 @@ namespace userPortalBackend.presentation.Controllers
                 });
             }
             catch (Exception ex) { 
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = "Failed to add user",
+                });
             }
         }
 
@@ -55,11 +59,14 @@ namespace userPortalBackend.presentation.Controllers
         {
             try
             {
-
                 var user = await _userServices.loginUser(loginDTO);
 
                 if (user == null)
-                    return BadRequest("User does not exist");
+                    return BadRequest(new
+                    {
+                        StatusCode = 401,
+                        Message = "Inavlid credential!"
+                    });
 
                 // verify the password
                 var PasswordHasher = new PasswordHasher();
@@ -67,7 +74,8 @@ namespace userPortalBackend.presentation.Controllers
                 if (!orgPassword)
                 {
                
-                    return BadRequest("Inavlid credential");
+                    return BadRequest(new{ StatusCode = 401,
+                    Message = "Inavlid credential!"});
                 }
 
                 var jwtCredential = new JwtCredentialDto{
@@ -79,15 +87,19 @@ namespace userPortalBackend.presentation.Controllers
                 var jwtToken = JwtTokenGenerator.GenerateToken(jwtCredential);
                 return Ok(new {
                     token= jwtToken,
-                    Message= "user login successfully"
+                    Message= "User login successfully"
                 });
             }
             catch (Exception ex) {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = "Failed To Login!",
+                });
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("/reset-password-email/{email}")]
         public async Task<IActionResult> sendEmail(string email)
         {
@@ -98,7 +110,7 @@ namespace userPortalBackend.presentation.Controllers
                     new
                     {
                         statusCode = 404,
-                        Message = "User Not Found"
+                        message = "This Not A Registered Email"
                     }
                 );
 
@@ -123,15 +135,53 @@ namespace userPortalBackend.presentation.Controllers
                 _emailServices.setEmailToken(resetPassword);
                 return Ok(new
                 {
-                    statusCode = 200,
+                    StatusCode = 200,
                     Message = "Sent Email Successfully!"
                 });
             }
             catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = "Failed to Send Email",
+                });
             }
 
+        }
+
+
+        [HttpPost]
+        [Route("/reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO PasswordToReset)
+        {
+            try
+            {
+                var PasswordHasher = new PasswordHasher();
+                var HashedPassword = PasswordHasher.HashedPassword(PasswordToReset.Password);
+                (string resetPasswordToken, DateTime? resetPasswordExpiry)= await _userServices.resetPassword(PasswordToReset.email);
+                Console.WriteLine(resetPasswordToken);
+                Console.WriteLine("code ", PasswordToReset);
+                //if (resetPasswordToken != PasswordToReset.code)
+                //{
+                //    return BadRequest("Invalid Token");
+                //}
+
+                if (resetPasswordExpiry.HasValue && resetPasswordExpiry > DateTime.Now)
+                {
+                    return BadRequest("Token has expired");
+                }
+
+                await _userServices.updatePassword(HashedPassword, PasswordToReset.email);
+                return Ok(new
+                {
+                    statusCode=200,
+                    Message= "Updated Password SuccessFully!"
+                });
+            }
+            catch (Exception ex) {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

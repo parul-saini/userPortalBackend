@@ -33,6 +33,17 @@ namespace userPortalBackend.presentation
             builder.Services.AddTransient<IEmailServices,EmailServices >();
             builder.Services.AddScoped<PasswordHasher>();
 
+            // Add CORS services
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
 
             // --------------- this code is to generate the token 
 
@@ -71,6 +82,8 @@ namespace userPortalBackend.presentation
 
             app.UseAuthorization();
 
+            // Use CORS policy
+            app.UseCors("AllowAllOrigins");
 
             app.MapControllers();
 

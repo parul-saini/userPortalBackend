@@ -48,5 +48,35 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
             await _dataContext.SaveChangesAsync();
             return emailCredential;
         }
+
+        public async Task<(string ResetPasswordToken, DateTime? ResetPasswordExpiry)> resetPassword(string email)
+        {
+            var result = await _dataContext.UserPortals.Where(user => user.Email == email)
+               .Join(_dataContext.ResetPasswords,
+                   user => user.UserId,
+                   reset => reset.UserId,
+                   (user, reset) => new { reset.ResetPasswordToken, reset.ResetPasswordExpiry })
+                    .OrderByDescending(item => item.ResetPasswordExpiry)
+               .LastOrDefaultAsync();
+
+            if (result != null)
+            {
+                return (result.ResetPasswordToken, result.ResetPasswordExpiry);
+            }
+            else
+            {
+                return (null, null); // Return null if no matching record found
+            }
+        }
+
+
+        public async Task updatePassword(string Password,string email)
+        {
+            var user = await _dataContext.UserPortals.AsNoTracking().FirstOrDefaultAsync(a => email == a.Email);
+            user.Password = Password;
+            _dataContext.Entry(user).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
+        }
+
     }
 }

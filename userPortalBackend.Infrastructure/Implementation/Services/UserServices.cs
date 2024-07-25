@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,7 +73,8 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
 
         public async Task<UserPortal> getUserByEmail(string email)
         {
-            return await _userRepository.getUserByEmail(email);
+            var encryptedEmail = EncryptionDecryptionHandler.Encryption(email);
+            return await _userRepository.getUserByEmail(encryptedEmail);
         }
 
         public async Task<UserPortal> loginUser(UserLoginDTO logindto)
@@ -79,6 +82,26 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
             //encrypt the email at all, you need to do it with a common salt/key. Otherwise, how are you going to select a user by his email address from the db to check whether the hashed password is correct?
             var decryptedEmail = EncryptionDecryptionHandler.Encryption(logindto.Email);
             return await _userRepository.getUserByEmail(decryptedEmail);
+        }
+
+        public async Task<(string resetPasswordToken, DateTime? resetPasswordExpiry)> resetPassword(string email)
+        {
+            try
+            {
+                var decryptedEmail = EncryptionDecryptionHandler.Encryption(email);
+                 return await _userRepository.resetPassword(decryptedEmail);
+ 
+            }
+            catch (Exception ex) {
+                throw;
+            }
+        }
+
+
+        public async Task updatePassword(string Password, string email)
+        {
+            var decryptedEmail = EncryptionDecryptionHandler.Encryption(email);
+            await _userRepository.updatePassword(Password, decryptedEmail);
         }
 
     }

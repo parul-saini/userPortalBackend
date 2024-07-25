@@ -19,5 +19,9 @@ namespace userPortalBackend.Application.IRepository
         public Task<UserPortal> getUserByEmail(string email);
 
         public Task<ResetPassword> setEmailToken(ResetPassword emailCredential);
+
+        public Task<(string ResetPasswordToken, DateTime? ResetPasswordExpiry)> resetPassword(string email);
+
+        Task updatePassword(string Password, string email);
     }
 }

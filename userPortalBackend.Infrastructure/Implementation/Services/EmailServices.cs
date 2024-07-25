@@ -60,7 +60,6 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
         }
       
 
-
         public async Task<ResetPassword> setEmailToken(ResetPassword emailCredential)
         {
             return await _userRepository.setEmailToken(emailCredential);

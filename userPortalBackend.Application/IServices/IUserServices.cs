@@ -17,5 +17,9 @@ namespace userPortalBackend.Application.IServices
         public Task<UserPortal> getUserByEmail(string email);
 
         public Task<UserPortal> loginUser(UserLoginDTO logindto);
+
+        public Task<(string resetPasswordToken, DateTime? resetPasswordExpiry)> resetPassword(string email);
+
+        Task updatePassword(string Password, string email);
     }
 }
