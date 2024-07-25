@@ -33,12 +33,18 @@ namespace userPortalBackend.presentation.Controllers
         {
             try
             {
-               var PasswordHasher= new PasswordHasher();
+                //i made a email obj before hashing credentials
+               var _emailModel = new EmailDTO
+               (
+                   userRegister.Email,
+                   "Your Credentials",
+                   EmailBody.EmailStringbodyForSendingCredentails(userRegister)
+               );
+                var PasswordHasher= new PasswordHasher();
                var HashedPassword = PasswordHasher.HashedPassword(userRegister.Password);
                userRegister.Password = HashedPassword;
-               //var encryptEmail= EncryptionHelper.Encryption(userRegister.Email);
-               //userRegister.Email= encryptEmail;
-                var user = await _userServices.addUser(userRegister);
+               var user = await _userServices.addUser(userRegister);
+                _emailServices.sendEmail(_emailModel);
                 return Ok(new{
                     StatusCode = 200,
                     Message= "user added successfully",
@@ -49,6 +55,7 @@ namespace userPortalBackend.presentation.Controllers
                 {
                     StatusCode = 500,
                     Message = "Failed to add user",
+                    Exception= ex.Message,
                 });
             }
         }
@@ -116,7 +123,7 @@ namespace userPortalBackend.presentation.Controllers
 
                 var tokenBytes = RandomNumberGenerator.GetBytes(64);
                 var emailToken = Convert.ToBase64String(tokenBytes);
-                var resetPassword = new ResetPassword
+                var resetPasswordObj = new ResetPassword
                 {
                     UserId = user.UserId,
                     ResetPasswordToken = emailToken,
@@ -132,7 +139,7 @@ namespace userPortalBackend.presentation.Controllers
                 );
 
                 _emailServices.sendEmail( _emailModel );
-                _emailServices.setEmailToken(resetPassword);
+                _emailServices.setEmailToken(resetPasswordObj);
                 return Ok(new
                 {
                     StatusCode = 200,
@@ -162,14 +169,15 @@ namespace userPortalBackend.presentation.Controllers
                 (string resetPasswordToken, DateTime? resetPasswordExpiry)= await _userServices.resetPassword(PasswordToReset.email);
                 Console.WriteLine(resetPasswordToken);
                 Console.WriteLine("code ", PasswordToReset);
-                //if (resetPasswordToken != PasswordToReset.code)
-                //{
-                //    return BadRequest("Invalid Token");
-                //}
-
-                if (resetPasswordExpiry.HasValue && resetPasswordExpiry > DateTime.Now)
+                if (resetPasswordToken != null && PasswordToReset.code != null &&
+    !           resetPasswordToken.ToString().Equals(PasswordToReset.code.ToString()))
                 {
-                    return BadRequest("Token has expired");
+                    return BadRequest("Invalid Token,Sent Email Again");
+                }
+
+                if (resetPasswordExpiry.HasValue && resetPasswordExpiry < DateTime.Now)
+                {
+                    return BadRequest("Token has expired,,Sent Email Again");
                 }
 
                 await _userServices.updatePassword(HashedPassword, PasswordToReset.email);

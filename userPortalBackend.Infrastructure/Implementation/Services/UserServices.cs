@@ -26,9 +26,9 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
 
         public async Task<UserPortal> addUser(UserRegisterDTO userRegister)
         {
-            if(await _userRepository.userExist(userRegister.Email)){
-                throw new Exception("User is already exist");
-            }
+           // if(this.getUserByEmail(userRegister.Email) != null){
+           //     throw new Exception("User is already exist");
+           // }
             var encryptedEmail = EncryptionDecryptionHandler.Encryption(userRegister.Email);
             userRegister.Email = encryptedEmail;
 

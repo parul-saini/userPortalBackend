@@ -52,12 +52,12 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
         public async Task<(string ResetPasswordToken, DateTime? ResetPasswordExpiry)> resetPassword(string email)
         {
             var result = await _dataContext.UserPortals.Where(user => user.Email == email)
-               .Join(_dataContext.ResetPasswords,
+                   .Join(_dataContext.ResetPasswords,
                    user => user.UserId,
                    reset => reset.UserId,
                    (user, reset) => new { reset.ResetPasswordToken, reset.ResetPasswordExpiry })
-                    .OrderByDescending(item => item.ResetPasswordExpiry)
-               .LastOrDefaultAsync();
+                   .OrderByDescending(item => item.ResetPasswordExpiry) //to get the latest email time
+                   .FirstOrDefaultAsync();
 
             if (result != null)
             {

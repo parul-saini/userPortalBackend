@@ -20,6 +20,6 @@ namespace userPortalBackend.Application.IServices
 
         public Task<(string resetPasswordToken, DateTime? resetPasswordExpiry)> resetPassword(string email);
 
-        Task updatePassword(string Password, string email);
+        public Task updatePassword(string Password, string email);
     }
 }
