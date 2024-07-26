@@ -72,10 +72,22 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
 
         public async Task updatePassword(string Password,string email)
         {
-            var user = await _dataContext.UserPortals.AsNoTracking().FirstOrDefaultAsync(a => email == a.Email);
-            user.Password = Password;
-            _dataContext.Entry(user).State = EntityState.Modified;
-            await _dataContext.SaveChangesAsync();
+            try
+            {
+                var user = await _dataContext.UserPortals.AsNoTracking().FirstOrDefaultAsync(a => email == a.Email);
+                user.Password = Password;
+                _dataContext.Entry(user).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
+                // Remove related reset password entries
+                var resetPasswords = _dataContext.ResetPasswords
+                    .Where(u => u.UserId == user.UserId);
+
+                _dataContext.ResetPasswords.RemoveRange(resetPasswords);
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception ex) {
+                throw new Exception("Failed to update the password");
+            }
         }
 
     }

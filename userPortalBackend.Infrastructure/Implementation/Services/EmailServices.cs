@@ -23,7 +23,7 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
             var emailMsg = new MimeMessage();
             var from = _configuration["Emailsettings:From"];
 
-            emailMsg.From.Add(new MailboxAddress("forgot-password", from));
+            emailMsg.From.Add(new MailboxAddress("User-Portal", from));
             emailMsg.To.Add(new MailboxAddress(emailDTO.to, emailDTO.to));
             emailMsg.Subject = emailDTO.subject;
             Console.WriteLine($"Email Body: {emailDTO.body}");

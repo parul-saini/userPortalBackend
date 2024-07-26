@@ -84,8 +84,6 @@ namespace userPortalBackend.presentation
         }
 
 
-
-
         public static string EmailStringbodyForSendingCredentails(UserRegisterDTO user)
         {
             return $@"

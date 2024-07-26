@@ -82,7 +82,7 @@ namespace userPortalBackend.presentation.Controllers
                 {
                
                     return BadRequest(new{ StatusCode = 401,
-                    Message = "Inavlid credential!"});
+                    Message = "Invalid credential!"});
                 }
 
                 var jwtCredential = new JwtCredentialDto{
@@ -167,8 +167,8 @@ namespace userPortalBackend.presentation.Controllers
                 var PasswordHasher = new PasswordHasher();
                 var HashedPassword = PasswordHasher.HashedPassword(PasswordToReset.Password);
                 (string resetPasswordToken, DateTime? resetPasswordExpiry)= await _userServices.resetPassword(PasswordToReset.email);
-                Console.WriteLine(resetPasswordToken);
-                Console.WriteLine("code ", PasswordToReset);
+              //  Console.WriteLine(resetPasswordToken);
+              //  Console.WriteLine("code ", PasswordToReset);
                 if (resetPasswordToken != null && PasswordToReset.code != null &&
     !           resetPasswordToken.ToString().Equals(PasswordToReset.code.ToString()))
                 {
@@ -189,6 +189,21 @@ namespace userPortalBackend.presentation.Controllers
             }
             catch (Exception ex) {
                 throw new Exception(ex.Message);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("/getAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var users = 
+            }
+            catch (Exception ex)
+            {
+  
             }
         }
     }
