@@ -26,7 +26,7 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
 
         public async Task<UserPortal> addUser(UserRegisterDTO userRegister)
         {
-            var isUserExist = await this.getUserByEmail(userRegister.Email);
+           var isUserExist = await this.getUserByEmail(userRegister.Email);
            if (isUserExist != null){
                 throw new Exception("User is already exist");
            }
@@ -105,5 +105,27 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
             await _userRepository.updatePassword(Password, decryptedEmail);
         }
 
+        public async Task<UserDTO> getAdminDetail(int userId)
+        {
+            return await _userRepository.getAdminDetail(userId);
+        }
+
+        public async Task updateUser(UserRegisterDTO user)
+        {
+            var encryptedEmail = EncryptionDecryptionHandler.Encryption(user.Email);
+            user.Email = encryptedEmail;
+            await _userRepository.updateUser(user);
+        }
+
+        public async Task deleteById(int id )
+        {
+            try
+            {
+                 await _userRepository.deleteById(id);
+            }
+            catch (Exception ex) { 
+               throw new Exception(ex.Message);
+            }
+        }
     }
 }

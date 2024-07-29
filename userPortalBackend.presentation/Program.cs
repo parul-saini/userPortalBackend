@@ -78,12 +78,11 @@ namespace userPortalBackend.presentation
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-
-            app.UseAuthorization();
-
-            // Use CORS policy
+            // Use CORS
             app.UseCors("AllowAllOrigins");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 

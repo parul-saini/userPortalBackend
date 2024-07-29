@@ -18,7 +18,6 @@ namespace userPortalBackend.presentation
                 {
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("userId", user.userId.ToString()), // Use a custom claim type for userId
-                new Claim("Password", user.Password)
                 });
 
             var _SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);

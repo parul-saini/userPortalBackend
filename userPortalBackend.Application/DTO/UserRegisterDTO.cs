@@ -8,6 +8,7 @@ namespace userPortalBackend.Application.DTO
 {
     public class UserRegisterDTO
     {
+        public int UserId { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
@@ -20,8 +21,10 @@ namespace userPortalBackend.Application.DTO
         public string Password { get; set; }
         public string Role { get;set; }
         public string ImageUrl {  get; set; }
+        public int Active {  get; set; }
 
         // Address fields
+        public int AddressId {  get; set; } 
         public string AddressLine1 { get; set; }
         public string City { get; set; }
         public string State { get; set; }

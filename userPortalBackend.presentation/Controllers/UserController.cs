@@ -6,6 +6,8 @@ using userPortalBackend.presentation.Data.Models;
 using userPortalBackend.presentation;
 using System.Security.Cryptography;
 using userPortalBackend.presentation.TempModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace userPortalBackend.presentation.Controllers
 {
@@ -56,6 +58,37 @@ namespace userPortalBackend.presentation.Controllers
                     StatusCode = 500,
                     Message = "Failed to add user",
                     Exception= ex.Message,
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("/updateUser")]
+        public async Task<IActionResult> UpdateUser(UserRegisterDTO user)
+        {
+            try
+            {
+                if (user == null)
+                {
+                    return BadRequest("user is null");
+                }
+                var PasswordHasher = new PasswordHasher();
+                var HashedPassword = PasswordHasher.HashedPassword(user?.Password);
+                user.Password = HashedPassword;
+                await _userServices.updateUser(user);
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "User updated successfully"
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = ex.Message
                 });
             }
         }
@@ -192,19 +225,126 @@ namespace userPortalBackend.presentation.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet]
         [Route("/getAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
             {
-                var users = 
+                var users =  await _userServices.getAllUser();
+                var usersResponse = users.Select(user => new
+                {
+                    UserId = user.UserId,
+                    FirstName = user.FirstName,
+                    MiddleName = user.MiddleName,
+                    LastName = user.LastName,
+                    Gender = user.Gender,
+                    DateOfJoining = user.DateOfJoining,
+                    Dob = user.Dob,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    AlternatePhone = user.AlternatePhone,
+                    ImageUrl = user.ImageUrl,
+                    Active = user.Active,
+                    Addresses = user.AddressPortals.Select(address => new AddressDTO
+                    {
+                        AddressId = address.AddressId,
+                        UserId = address.UserId,
+                        AddressLine1 = address.AddressLine1,
+                        City = address.City,
+                        State = address.State,
+                        Country = address.Country,
+                        ZipCode = address.ZipCode,
+                        AddressLine2 = address.AddressLine2,
+                        City2 = address.City2,
+                        State2 = address.State2,
+                        Country2 = address.Country2,
+                        ZipCode2 = address.ZipCode2
+                    }).ToList()
+                }).ToList();
+
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Data = usersResponse,
+                    Message= " Users Fetch SuccessFully",
+                });
+
             }
             catch (Exception ex)
             {
-  
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,                  
+                });
             }
         }
+
+
+        [Authorize]
+        [HttpGet]
+        [Route("/getAdmindetail")]
+        public async Task<IActionResult> GetAdminDetail()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst("userId")?.Value;
+                Console.WriteLine("userIdClaim",userIdClaim);
+                if (userIdClaim == null)
+                {
+                    return Unauthorized(
+                         "Invalid Token"
+                    );
+                }
+
+                int userId = int.Parse(userIdClaim);
+                var user = await _userServices.getAdminDetail(userId);
+
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Data = user,
+                    Message = "User fetched successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Data = null,
+                    Message = ex.Message
+                });
+            }
+        }
+
+
+        [HttpDelete]
+        [Route("/deleteById/{id}")]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            try
+            {
+                await _userServices.deleteById(id);
+                return Ok(new
+                {
+                     StatusCode= 200,
+                     Message= "deleted successfully",
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = " Failed to delete",
+                    Error= ex.Message,
+                });
+            }
+        }
+
+
     }
 }

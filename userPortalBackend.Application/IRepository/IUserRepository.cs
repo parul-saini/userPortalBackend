@@ -23,5 +23,11 @@ namespace userPortalBackend.Application.IRepository
         public Task<(string ResetPasswordToken, DateTime? ResetPasswordExpiry)> resetPassword(string email);
 
         public Task updatePassword(string Password, string email);
+
+        public Task<UserDTO> getAdminDetail(int UserId);
+
+        public Task updateUser(UserRegisterDTO user);
+
+        public Task deleteById(int id);
     }
 }
