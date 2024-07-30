@@ -49,7 +49,7 @@ namespace userPortalBackend.presentation.Controllers
                 _emailServices.sendEmail(_emailModel);
                 return Ok(new{
                     StatusCode = 200,
-                    Message= "user added successfully",
+                    Message= "User added successfully ,Also sent credential to user email",
                 });
             }
             catch (Exception ex) { 
@@ -342,6 +342,31 @@ namespace userPortalBackend.presentation.Controllers
                     Message = " Failed to delete",
                     Error= ex.Message,
                 });
+            }
+        }
+
+        [HttpGet]
+        [Route("/updateActiveStatus/{userId}")]
+        public async Task<IActionResult> updateActiveStatus(int userId)
+        {
+            try
+            {
+                await _userServices.updateActiveStatus(userId);
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Data = null,
+                    Message = "Update Active statussuccessfully"
+                });
+            }
+            catch(Exception ex) {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Data = null,
+                    Message = "Failed to update Active status"
+                });
+
             }
         }
 

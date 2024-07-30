@@ -21,7 +21,12 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
 
         public async Task<List<UserPortal>> getAllUser()
         {
-            return await _userRepository.getAllUser();
+            var usersList =  await _userRepository.getAllUser();
+            foreach (var user in usersList) { 
+                var decryptedEmail= EncryptionDecryptionHandler.Decryption(user.Email);
+                user.Email = decryptedEmail;
+            }
+            return usersList;
         }
 
         public async Task<UserPortal> addUser(UserRegisterDTO userRegister)
@@ -125,6 +130,18 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
             }
             catch (Exception ex) { 
                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task updateActiveStatus(int userId)
+        {
+            try
+            {
+                await _userRepository.updateActiveStatus(userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
     }

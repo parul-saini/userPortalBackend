@@ -27,5 +27,7 @@ namespace userPortalBackend.Application.IServices
         public Task updateUser(UserRegisterDTO user);
 
         public Task deleteById(int id);
+
+        public Task updateActiveStatus(int userId);
     }
 }

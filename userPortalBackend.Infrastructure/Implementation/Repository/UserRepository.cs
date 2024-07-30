@@ -169,5 +169,25 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task updateActiveStatus(int userId)
+        {
+            try
+            {
+                var user = await _dataContext.UserPortals.FirstOrDefaultAsync(u=> u.UserId==userId);
+                if (user == null)
+                {
+                    throw new Exception("User not found");
+                }
+
+                user.Active = !user.Active;
+                _dataContext.Entry(user).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
