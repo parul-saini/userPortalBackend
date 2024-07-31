@@ -356,7 +356,7 @@ namespace userPortalBackend.presentation.Controllers
                 {
                     StatusCode = 200,
                     Data = null,
-                    Message = "Update Active statussuccessfully"
+                    Message = "Update Active status successfully"
                 });
             }
             catch(Exception ex) {
