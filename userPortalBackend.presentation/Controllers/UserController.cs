@@ -331,7 +331,7 @@ namespace userPortalBackend.presentation.Controllers
                 return Ok(new
                 {
                      StatusCode= 200,
-                     Message= "deleted successfully",
+                     Message= "Deleted successfully",
                 });
             }
             catch (Exception ex)

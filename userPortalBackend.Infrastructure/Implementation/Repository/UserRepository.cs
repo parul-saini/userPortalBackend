@@ -162,6 +162,7 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
                 var address = await _dataContext.AddressPortals.FirstOrDefaultAsync(u => u.UserId == id);
                  _dataContext.AddressPortals.RemoveRange(address);
                  _dataContext.UserPortals.RemoveRange(user);
+                _dataContext.SaveChangesAsync();
 
             }
             catch (Exception ex)
