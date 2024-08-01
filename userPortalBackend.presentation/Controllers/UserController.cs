@@ -72,9 +72,9 @@ namespace userPortalBackend.presentation.Controllers
                 {
                     return BadRequest("user is null");
                 }
-                var PasswordHasher = new PasswordHasher();
-                var HashedPassword = PasswordHasher.HashedPassword(user?.Password);
-                user.Password = HashedPassword;
+                //var PasswordHasher = new PasswordHasher();
+                //var HashedPassword = PasswordHasher.HashedPassword(user?.Password);
+                //user.Password = HashedPassword;
                 await _userServices.updateUser(user);
                 return Ok(new
                 {
@@ -88,7 +88,8 @@ namespace userPortalBackend.presentation.Controllers
                 return BadRequest(new
                 {
                     StatusCode = 500,
-                    Message = ex.Message
+                    Message = ex.Message,
+                   // Error = ex
                 });
             }
         }
@@ -291,7 +292,7 @@ namespace userPortalBackend.presentation.Controllers
             try
             {
                 var userIdClaim = User.FindFirst("userId")?.Value;
-                Console.WriteLine("userIdClaim",userIdClaim);
+                
                 if (userIdClaim == null)
                 {
                     return Unauthorized(
@@ -370,6 +371,18 @@ namespace userPortalBackend.presentation.Controllers
             }
         }
 
-
+        [HttpGet]
+        [Route("/getUserDetails/{userId}")]
+        public async Task<IActionResult> getUserDetails(int userId)
+        {
+            try
+            {
+                var user= await _userServices.getUserDetail(userId);    
+                return Ok(user);
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

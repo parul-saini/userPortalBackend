@@ -31,5 +31,7 @@ namespace userPortalBackend.Application.IRepository
         public Task deleteById(int id);
 
         public Task updateActiveStatus(int userId);
+
+        public Task<UserDTO> getUserDetail(int UserId);
     }
 }

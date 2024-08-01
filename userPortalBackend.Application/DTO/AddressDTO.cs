@@ -19,7 +19,7 @@ namespace userPortalBackend.Application.DTO
             public string? City2 { get; set; }
             public string? State2 { get; set; }
             public string? Country2 { get; set; }
-           public string? ZipCode2 { get; set; }
+            public string? ZipCode2 { get; set; }
          
 
     }

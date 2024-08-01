@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -117,41 +118,36 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
 
         public async Task updateUser(UserRegisterDTO user)
         {
-            var userIdParam = new SqlParameter("@UserId", user.UserId);
-            var firstNameParam = new SqlParameter("@FirstName", user.FirstName);
-            var middleNameParam = new SqlParameter("@MiddleName", user.MiddleName ?? (object)DBNull.Value);
-            var lastNameParam = new SqlParameter("@LastName", user.LastName);
-            var genderParam = new SqlParameter("@Gender", user.Gender ?? (object)DBNull.Value);
-            var dateOfJoiningParam = new SqlParameter("@DateOfJoining", user.DateOfJoining ?? (object)DBNull.Value);
-            var dobParam = new SqlParameter("@Dob", user.DOB ?? (object)DBNull.Value);
-            var emailParam = new SqlParameter("@Email", user.Email);
-            var phoneParam = new SqlParameter("@Phone", user.Phone);
-            var alternatePhoneParam = new SqlParameter("@AlternatePhone", user.AlternatePhone ?? (object)DBNull.Value);
-            var imageUrlParam = new SqlParameter("@ImageUrl", user.ImageUrl ?? (object)DBNull.Value);
-            var roleParam = new SqlParameter("@Role", user.Role ?? (object)DBNull.Value);
-            var activeParam = new SqlParameter("@Active", user.Active );
-            var passwordParam = new SqlParameter("@Password", user.Password ?? (object)DBNull.Value);
-            var updatedAtParam = new SqlParameter("@UpdatedAt", DateTime.Now);
+            var parameters = new[]
+            {
+        new SqlParameter("@UserId", SqlDbType.Int) { Value = user.UserId },
+        new SqlParameter("@FirstName", SqlDbType.NVarChar, 50) { Value = user.FirstName },
+        new SqlParameter("@MiddleName", SqlDbType.NVarChar, 50) { Value = (object)user.MiddleName ?? DBNull.Value },
+        new SqlParameter("@LastName", SqlDbType.NVarChar, 50) { Value = user.LastName },
+        new SqlParameter("@Gender", SqlDbType.VarChar, 20) { Value = (object)user.Gender ?? DBNull.Value },
+        new SqlParameter("@DateOfJoining", SqlDbType.Date) { Value = (object)user.DateOfJoining ?? DBNull.Value },
+        new SqlParameter("@Dob", SqlDbType.Date) { Value = (object)user.DOB ?? DBNull.Value },
+        new SqlParameter("@Email", SqlDbType.NVarChar, 100) { Value = user.Email },
+        new SqlParameter("@Phone", SqlDbType.NVarChar, 15) { Value = user.Phone },
+        new SqlParameter("@AlternatePhone", SqlDbType.NVarChar, 15) { Value = (object)user.AlternatePhone ?? DBNull.Value },
+        new SqlParameter("@ImageUrl", SqlDbType.NVarChar, 1000) { Value = (object)user.ImageUrl ?? DBNull.Value },
+        new SqlParameter("@AddressId", SqlDbType.Int) { Value = user.AddressId },
+        new SqlParameter("@AddressLine1", SqlDbType.NVarChar, 255) { Value = (object)user.AddressLine1 ?? DBNull.Value },
+        new SqlParameter("@City", SqlDbType.NVarChar, 100) { Value = (object)user.City ?? DBNull.Value },
+        new SqlParameter("@State", SqlDbType.NVarChar, 100) { Value = (object)user.State ?? DBNull.Value },
+        new SqlParameter("@Country", SqlDbType.NVarChar, 100) { Value = (object)user.Country ?? DBNull.Value },
+        new SqlParameter("@ZipCode", SqlDbType.NVarChar, 10) { Value = (object)user.ZipCode ?? DBNull.Value },
+        new SqlParameter("@AddressLine2", SqlDbType.NVarChar, 255) { Value = (object)user.AddressLine2 ?? DBNull.Value },
+        new SqlParameter("@City2", SqlDbType.NVarChar, 100) { Value = (object)user.City2 ?? DBNull.Value },
+        new SqlParameter("@State2", SqlDbType.NVarChar, 100) { Value = (object)user.State2 ?? DBNull.Value },
+        new SqlParameter("@Country2", SqlDbType.NVarChar, 100) { Value = (object)user.Country2 ?? DBNull.Value },
+        new SqlParameter("@ZipCode2", SqlDbType.NVarChar, 10) { Value = (object)user.ZipCode2 ?? DBNull.Value },
+    };
 
-            var addressIdParam = new SqlParameter("@AddressId", user.AddressId);
-            var addressLine1Param = new SqlParameter("@AddressLine1", user.AddressLine1 ?? (object)DBNull.Value);
-            var cityParam = new SqlParameter("@City", user.City ?? (object)DBNull.Value);
-            var stateParam = new SqlParameter("@State", user.State ?? (object)DBNull.Value);
-            var countryParam = new SqlParameter("@Country", user.Country ?? (object)DBNull.Value);
-            var zipCodeParam = new SqlParameter("@ZipCode", user.ZipCode ?? (object)DBNull.Value);
-            var addressLine2Param = new SqlParameter("@AddressLine2", user.AddressLine2 ?? (object)DBNull.Value);
-            var city2Param = new SqlParameter("@City2", user.City2 ?? (object)DBNull.Value);
-            var state2Param = new SqlParameter("@State2", user.State2 ?? (object)DBNull.Value);
-            var country2Param = new SqlParameter("@Country2", user.Country2 ?? (object)DBNull.Value);
-            var zipCode2Param = new SqlParameter("@ZipCode2", user.ZipCode2 ?? (object)DBNull.Value);
-
-        await _dataContext.Database.ExecuteSqlRawAsync(
-        "EXEC UpdateUserAndAddress @UserId, @FirstName, @MiddleName, @LastName, @Gender, @DateOfJoining, @Dob, @Email, @Phone, @AlternatePhone, @ImageUrl, @Role, @Active, @Password, @UpdatedAt, @AddressId, @AddressLine1, @City, @State, @Country, @ZipCode, @AddressLine2, @City2, @State2, @Country2, @ZipCode2",
-        userIdParam, firstNameParam, middleNameParam, lastNameParam, genderParam, dateOfJoiningParam, dobParam, emailParam, phoneParam, alternatePhoneParam, imageUrlParam, roleParam, activeParam, passwordParam, updatedAtParam,
-        addressIdParam, addressLine1Param, cityParam, stateParam, countryParam, zipCodeParam, addressLine2Param, city2Param, state2Param, country2Param, zipCode2Param);
-        
-
-    }
+            await _dataContext.Database.ExecuteSqlRawAsync(
+                "EXEC UpdateUserAndAddress @UserId, @FirstName, @MiddleName, @LastName, @Gender, @DateOfJoining, @Dob, @Email, @Phone, @AlternatePhone, @ImageUrl, @AddressId, @AddressLine1, @City, @State, @Country, @ZipCode, @AddressLine2, @City2, @State2, @Country2, @ZipCode2",
+                parameters);
+        }
 
 
         public async Task deleteById(int id)
@@ -160,9 +156,16 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
             {
                 var user = await _dataContext.UserPortals.FirstOrDefaultAsync(u=>u.UserId==id);
                 var address = await _dataContext.AddressPortals.FirstOrDefaultAsync(u => u.UserId == id);
-                 _dataContext.AddressPortals.RemoveRange(address);
-                 _dataContext.UserPortals.RemoveRange(user);
-                _dataContext.SaveChangesAsync();
+                if (address != null)
+                {
+                    _dataContext.AddressPortals.RemoveRange(address);
+                }
+                if (user != null)
+                {
+                    _dataContext.UserPortals.Remove(user);
+                }
+                
+                await _dataContext.SaveChangesAsync();
 
             }
             catch (Exception ex)
@@ -188,6 +191,64 @@ namespace userPortalBackend.Infrastructure.Implementation.Repository
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<UserDTO> getUserDetail(int UserId)
+        {
+            try
+            {
+                // Fetch the user details from the userPortal table
+                var user = await _dataContext.UserPortals.FirstOrDefaultAsync(u => u.UserId == UserId);
+                if (user == null)
+                {
+                    throw new Exception($"User with ID {UserId} was not found.");
+                }
+                // Fetch the addresses associated with the user from the addressPortal table
+                var addresses = await _dataContext.AddressPortals
+                    .Where(a => a.UserId == UserId)
+                    .Select(a => new AddressDTO
+                    {
+                        AddressId = a.AddressId,
+                        UserId = a.UserId,
+                        AddressLine1 = a.AddressLine1,
+                        City = a.City,
+                        State = a.State,
+                        Country = a.Country,
+                        ZipCode = a.ZipCode,
+                        AddressLine2 = a.AddressLine2,
+                        City2 = a.City2,
+                        State2 = a.State2,
+                        Country2 = a.Country2,
+                        ZipCode2 = a.ZipCode2
+                    }).ToListAsync() ?? new List<AddressDTO>(); ;
+
+                // Map the user and address data to the UserDTO
+                return new UserDTO
+                {
+                    UserId = user.UserId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    MiddleName = user.MiddleName,
+                    Gender = user.Gender,
+                    DateOfJoining = user.DateOfJoining,
+                    Email = user.Email,
+                    Dob = user.Dob,
+                    Phone = user.Phone,
+                    AlternatePhone = user.AlternatePhone,
+                    ImageUrl = user.ImageUrl,
+                    Role = user.Role,
+                    CreatedBy = user.CreatedBy,
+                    CreatedAt = user.CreatedAt,
+                    Active = user.Active,
+                    UpdatedAt = user.UpdatedAt,
+                    Addresses = addresses
+                };
+
+
+            }
+            catch (Exception ex) {
+                throw new Exception("Error retrieving user details", ex);
             }
         }
     }

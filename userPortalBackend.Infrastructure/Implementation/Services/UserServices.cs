@@ -144,5 +144,13 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<UserDTO> getUserDetail(int UserId)
+        {
+            var user= await _userRepository.getUserDetail(UserId);
+            user.Email= EncryptionDecryptionHandler.Decryption(user.Email);
+            return user
+                ;
+        }
     }
 }
