@@ -35,8 +35,10 @@ namespace userPortalBackend.presentation.Controllers
         {
             try
             {
+                var userIdClaim = User.FindFirst("userId")?.Value;
+                var userIdClaimId=  int.Parse(userIdClaim);
                 //i made a email obj before hashing credentials
-               var _emailModel = new EmailDTO
+                var _emailModel = new EmailDTO
                (
                    userRegister.Email,
                    "Your Credentials",
@@ -45,7 +47,7 @@ namespace userPortalBackend.presentation.Controllers
                 var PasswordHasher= new PasswordHasher();
                var HashedPassword = PasswordHasher.HashedPassword(userRegister.Password);
                userRegister.Password = HashedPassword;
-               var user = await _userServices.addUser(userRegister);
+               var user = await _userServices.addUser(userRegister, userIdClaimId);
                 _emailServices.sendEmail(_emailModel);
                 return Ok(new{
                     StatusCode = 200,

@@ -12,7 +12,7 @@ namespace userPortalBackend.Application.IServices
     {
         public Task<List<UserPortal>> getAllUser();
 
-        public Task<UserPortal> addUser(UserRegisterDTO userRegister);
+        public Task<UserPortal> addUser(UserRegisterDTO userRegister, int createdBy);
 
         public Task<UserPortal> getUserByEmail(string email);
 

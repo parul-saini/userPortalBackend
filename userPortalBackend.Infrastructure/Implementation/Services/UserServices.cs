@@ -29,7 +29,7 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
             return usersList;
         }
 
-        public async Task<UserPortal> addUser(UserRegisterDTO userRegister)
+        public async Task<UserPortal> addUser(UserRegisterDTO userRegister,int createdBy)
         {
            var isUserExist = await this.getUserByEmail(userRegister.Email);
            if (isUserExist != null){
@@ -56,6 +56,7 @@ namespace userPortalBackend.Infrastructure.Implementation.Services
                 Password = userRegister.Password, //  hashed  password
                 Role = userRegister.Role,
                 ImageUrl = userRegister.ImageUrl,
+                CreatedBy= createdBy,
                 AddressPortals = new List<AddressPortal>
                 {
                     new AddressPortal
